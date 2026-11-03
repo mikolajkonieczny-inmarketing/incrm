@@ -1,0 +1,1147 @@
+<title>inCRM Project Manager</title>
+<meta name="description" content="Prototyp widoku Project Managera w CRM agencji inmarketing">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Poppins:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: ciemny sidebar (Rich Black) + jasny obszar roboczy; Bittersweet = akcja, Air Force Blue = informacja/tier */
+:root {
+  --brand-coral: #FF6F61;
+  --brand-blue: #27398A;
+  --brand-black: #242726;
+
+  --bg: #F4F5F8;
+  --surface: #FFFFFF;
+  --surface-2: #F1F2F6;
+  --line: #E3E5EC;
+  --line-strong: #CDD1DC;
+  --fg: #242726;
+  --fg-2: #454948;
+  --muted: #6D717C;
+  --faint: #A2A6B0;
+
+  --accent: #FF6F61;
+  --accent-ink: #D8412F;
+  --accent-soft: #FFEBE8;
+  --on-accent: #242726;
+
+  --blue: #27398A;
+  --blue-soft: #E7EAF6;
+  --on-blue: #FFFFFF;
+
+  --good: #17885A; --good-soft: #E2F4EB;
+  --warn: #B26A00; --warn-soft: #FFF3DC; --warn-line: #F4D79A;
+  --bad: #C9352A;  --bad-soft: #FDE8E6;
+
+  --side-bg: #242726;
+  --side-fg: #C9CBCA;
+  --side-muted: #7F8482;
+  --side-hover: #2F3331;
+  --side-active: #363A38;
+
+  --shadow: 0 1px 2px rgba(36,39,38,.05), 0 2px 8px rgba(36,39,38,.04);
+  --font: "Poppins", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-num: "Anton", "Poppins", Impact, "Arial Narrow", sans-serif;
+  --r: 10px;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #181A19; --surface: #212423; --surface-2: #2A2E2C; --line: #333736; --line-strong: #454A48;
+    --fg: #F0F1EF; --fg-2: #D3D5D3; --muted: #9DA2A0; --faint: #6E7371;
+    --accent: #FF6F61; --accent-ink: #FF8C80; --accent-soft: #3A2522; --on-accent: #242726;
+    --blue: #98A6EC; --blue-soft: #252B48; --on-blue: #141A38;
+    --good: #4CC98F; --good-soft: #17322A; --warn: #F0B04A; --warn-soft: #33290F; --warn-line: #5A4718;
+    --bad: #FF7B70; --bad-soft: #3A1E1C;
+    --side-bg: #121413; --side-fg: #C9CBCA; --side-muted: #737876; --side-hover: #1E2120; --side-active: #282C2A;
+    --shadow: 0 1px 2px rgba(0,0,0,.3);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #181A19; --surface: #212423; --surface-2: #2A2E2C; --line: #333736; --line-strong: #454A48;
+  --fg: #F0F1EF; --fg-2: #D3D5D3; --muted: #9DA2A0; --faint: #6E7371;
+  --accent: #FF6F61; --accent-ink: #FF8C80; --accent-soft: #3A2522; --on-accent: #242726;
+  --blue: #98A6EC; --blue-soft: #252B48; --on-blue: #141A38;
+  --good: #4CC98F; --good-soft: #17322A; --warn: #F0B04A; --warn-soft: #33290F; --warn-line: #5A4718;
+  --bad: #FF7B70; --bad-soft: #3A1E1C;
+  --side-bg: #121413; --side-fg: #C9CBCA; --side-muted: #737876; --side-hover: #1E2120; --side-active: #282C2A;
+  --shadow: 0 1px 2px rgba(0,0,0,.3);
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body { background: var(--bg); color: var(--fg); font-family: var(--font); font-size: 13.5px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+button, input, textarea, select { font: inherit; color: inherit; }
+button { cursor: pointer; }
+a { color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 6px; }
+.num { font-variant-numeric: tabular-nums; }
+h1, h2, h3 { text-wrap: balance; margin: 0; }
+svg.i { width: 16px; height: 16px; flex: none; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+
+/* ---------- shell ---------- */
+.app { display: grid; grid-template-columns: 236px minmax(0, 1fr); min-height: 100%; }
+.side { background: var(--side-bg); color: var(--side-fg); position: sticky; top: 0; height: 100vh; height: 100dvh; display: flex; flex-direction: column; padding: 18px 12px; gap: 4px; overflow-y: auto; }
+.logo { display: flex; align-items: center; gap: 10px; padding: 2px 8px 18px; color: #fff; font-weight: 700; font-size: 17px; letter-spacing: -.01em; }
+.logo-mark { width: 30px; height: 30px; border-radius: 8px; background: var(--brand-coral); color: var(--brand-black); display: grid; place-items: center; font-weight: 700; font-size: 15px; }
+.logo small { display: block; font-size: 10.5px; font-weight: 500; color: var(--side-muted); letter-spacing: .04em; }
+.side-label { font-size: 10px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--side-muted); padding: 16px 10px 6px; }
+.nav { display: flex; align-items: center; gap: 11px; padding: 8px 10px; border-radius: 8px; color: var(--side-fg); text-decoration: none; font-size: 13px; font-weight: 500; border: 0; background: none; width: 100%; text-align: left; }
+.nav:hover { background: var(--side-hover); color: #fff; }
+.nav.on { background: var(--side-active); color: #fff; box-shadow: inset 3px 0 0 var(--brand-coral); }
+.nav .tag { margin-left: auto; font-size: 9.5px; font-weight: 600; letter-spacing: .06em; padding: 1px 6px; border-radius: 4px; background: #3A3E3C; color: var(--side-muted); }
+.mod { display: flex; align-items: center; gap: 9px; padding: 5px 10px; font-size: 12px; color: var(--side-fg); }
+.mod .dot { width: 7px; height: 7px; border-radius: 50%; background: #4CC98F; box-shadow: 0 0 0 3px rgba(76,201,143,.15); }
+.mod.down { color: var(--side-muted); }
+.mod.down .dot { background: #FF6F61; box-shadow: 0 0 0 3px rgba(255,111,97,.18); }
+.mod .st { margin-left: auto; font-size: 10.5px; color: var(--side-muted); }
+.side-foot { margin-top: auto; padding-top: 14px; display: grid; gap: 4px; }
+.role { border: 1px solid #3A3E3C; border-radius: 10px; padding: 10px; font-size: 11.5px; color: var(--side-muted); display: grid; gap: 6px; }
+.role b { color: #fff; font-weight: 600; font-size: 12.5px; }
+.role-sw { display: flex; gap: 4px; }
+.role-sw span { flex: 1; text-align: center; padding: 4px 0; border-radius: 6px; font-size: 10.5px; font-weight: 600; background: #2F3331; color: var(--side-muted); }
+.role-sw span.on { background: var(--brand-coral); color: var(--brand-black); }
+
+.main { min-width: 0; display: flex; flex-direction: column; }
+.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; background: var(--surface); border-bottom: 1px solid var(--line); display: flex; align-items: center; gap: 14px; padding: 12px 28px; min-height: 60px; }
+.top h1 { font-size: 17px; font-weight: 600; letter-spacing: -.01em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.menu-btn { display: none; border: 0; background: none; padding: 6px; margin-left: -6px; }
+.search { margin-left: auto; display: flex; align-items: center; gap: 8px; background: var(--surface-2); border-radius: 9px; padding: 7px 12px; width: 260px; color: var(--muted); }
+.search input { border: 0; background: none; outline: none; width: 100%; font-size: 12.5px; }
+.icon-btn { border: 0; background: none; padding: 7px; border-radius: 8px; color: var(--muted); position: relative; display: grid; place-items: center; }
+.icon-btn:hover { background: var(--surface-2); color: var(--fg); }
+.icon-btn .badge { position: absolute; top: 5px; right: 6px; width: 7px; height: 7px; border-radius: 50%; background: var(--accent); border: 2px solid var(--surface); box-sizing: content-box; }
+.me { display: flex; align-items: center; gap: 10px; padding-left: 14px; border-left: 1px solid var(--line); }
+.me-txt { text-align: right; line-height: 1.25; }
+.me-txt b { display: block; font-size: 12.5px; font-weight: 600; }
+.me-txt span { font-size: 11px; color: var(--muted); }
+.sample { font-size: 10.5px; font-weight: 600; letter-spacing: .04em; color: var(--blue); background: var(--blue-soft); border-radius: 5px; padding: 3px 8px; white-space: nowrap; }
+
+.page { padding: 24px 28px 48px; display: grid; gap: 18px; align-content: start; }
+
+/* ---------- atoms ---------- */
+.av { width: 30px; height: 30px; border-radius: 8px; display: grid; place-items: center; font-size: 11px; font-weight: 600; color: #fff; flex: none; }
+.av.lg { width: 42px; height: 42px; border-radius: 11px; font-size: 14px; }
+.chip { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 6px; white-space: nowrap; line-height: 1.6; }
+.chip .d { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.st-aktywny { color: var(--good); background: var(--good-soft); }
+.st-onboarding { color: var(--blue); background: var(--blue-soft); }
+.st-zagrozony { color: var(--bad); background: var(--bad-soft); }
+.st-wstrzymany { color: var(--warn); background: var(--warn-soft); }
+.st-zakonczony { color: var(--muted); background: var(--surface-2); }
+.svc { font-size: 11px; font-weight: 500; padding: 2px 8px; border-radius: 6px; background: var(--blue-soft); color: var(--blue); white-space: nowrap; }
+.svc.more { background: var(--surface-2); color: var(--muted); }
+.tier { display: inline-grid; place-items: center; width: 26px; height: 24px; border-radius: 6px; font-size: 12px; font-weight: 700; }
+.tier-S { background: var(--blue); color: var(--on-blue); }
+.tier-A { background: var(--blue-soft); color: var(--blue); }
+.tier-B { background: var(--accent-soft); color: var(--accent-ink); }
+.tier-C { background: var(--surface-2); color: var(--fg-2); box-shadow: inset 0 0 0 1px var(--line-strong); }
+
+.btn { display: inline-flex; align-items: center; gap: 7px; border: 1px solid var(--line); background: var(--surface); color: var(--fg); padding: 8px 14px; border-radius: 9px; font-size: 12.5px; font-weight: 600; white-space: nowrap; text-decoration: none; }
+.btn:hover { border-color: var(--line-strong); background: var(--surface-2); }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+.btn.primary:hover { filter: brightness(.96); }
+.btn.ghost { border-color: transparent; background: none; color: var(--muted); }
+.btn.ghost:hover { color: var(--fg); background: var(--surface-2); }
+.btn.sm { padding: 5px 10px; font-size: 11.5px; border-radius: 7px; }
+.btn.danger { color: var(--bad); }
+.btn:disabled { opacity: .5; cursor: not-allowed; }
+
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow); }
+.card-h { display: flex; align-items: center; gap: 10px; padding: 16px 20px 0; }
+.card-h h2 { font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+.card-h .aside { margin-left: auto; font-size: 12px; color: var(--muted); }
+.card-b { padding: 14px 20px 18px; }
+.eyebrow { font-size: 10.5px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.link { color: var(--accent-ink); font-weight: 600; font-size: 12px; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; border: 0; background: none; padding: 0; }
+.link:hover { text-decoration: underline; }
+.muted { color: var(--muted); }
+.empty { padding: 26px; text-align: center; color: var(--muted); font-size: 12.5px; }
+
+input.f, textarea.f, select.f { width: 100%; border: 1px solid var(--line); background: var(--surface); border-radius: 9px; padding: 8px 11px; font-size: 13px; outline: none; }
+input.f:focus, textarea.f:focus, select.f:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+textarea.f { resize: vertical; min-height: 110px; line-height: 1.55; }
+select.f { width: auto; padding-right: 30px; }
+
+/* ---------- dashboard ---------- */
+.hello { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.hello h2 { font-size: 24px; font-weight: 600; letter-spacing: -.02em; }
+.hello p { margin: 2px 0 0; color: var(--muted); }
+.kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+.kpi { padding: 16px 18px; display: grid; gap: 4px; }
+.kpi .v { font-family: var(--font-num); font-size: 34px; line-height: 1.05; letter-spacing: .01em; }
+.kpi .v small { font-family: var(--font); font-size: 13px; font-weight: 600; color: var(--muted); margin-left: 4px; letter-spacing: 0; }
+.kpi .s { font-size: 11.5px; color: var(--muted); }
+.kpi.hot { background: var(--brand-black); border-color: var(--brand-black); color: #fff; }
+.kpi.hot .eyebrow, .kpi.hot .s { color: #B4B8B6; }
+.kpi.hot .v { color: var(--brand-coral); }
+.grid-2 { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr); gap: 18px; align-items: start; }
+.col { display: grid; gap: 18px; min-width: 0; }
+
+.att { display: grid; }
+.att-row { display: grid; grid-template-columns: 4px minmax(0,1fr) auto; gap: 14px; align-items: center; padding: 12px 0; border-top: 1px solid var(--line); }
+.att-row:first-child { border-top: 0; }
+.sev { align-self: stretch; border-radius: 4px; }
+.sev.bad { background: var(--bad); } .sev.warn { background: var(--warn); } .sev.info { background: var(--blue); }
+.att-row b { font-weight: 600; font-size: 13px; }
+.att-row p { margin: 1px 0 0; font-size: 12px; color: var(--muted); }
+
+.agenda { display: grid; gap: 2px; }
+.ag-day { font-size: 11px; font-weight: 600; color: var(--muted); padding: 10px 0 4px; letter-spacing: .03em; }
+.ag-day:first-child { padding-top: 0; }
+.ag { display: grid; grid-template-columns: 48px minmax(0,1fr); gap: 12px; padding: 7px 0; align-items: start; }
+.ag time { font-size: 12px; font-weight: 600; color: var(--fg-2); padding-top: 1px; }
+.ag b { font-weight: 500; font-size: 12.5px; display: block; }
+.ag span { font-size: 11.5px; color: var(--muted); }
+.ag .k { display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 6px; vertical-align: 1px; }
+
+.pulse { width: 100%; border-collapse: collapse; }
+.pulse td, .pulse th { padding: 9px 8px; text-align: left; border-top: 1px solid var(--line); font-size: 12.5px; }
+.pulse th { font-size: 10.5px; font-weight: 600; color: var(--muted); letter-spacing: .08em; text-transform: uppercase; border-top: 0; padding-top: 0; }
+.pulse tr[data-go] { cursor: pointer; }
+.pulse tr[data-go]:hover td { background: var(--surface-2); }
+.bar { height: 6px; border-radius: 3px; background: var(--surface-2); overflow: hidden; width: 100%; min-width: 60px; }
+.bar i { display: block; height: 100%; border-radius: 3px; }
+
+.feed { display: grid; }
+.fi { display: grid; grid-template-columns: 30px minmax(0,1fr); gap: 11px; padding: 10px 0; border-top: 1px solid var(--line); }
+.fi:first-child { border-top: 0; padding-top: 0; }
+.fi p { margin: 0; font-size: 12.5px; }
+.fi .meta { font-size: 11px; color: var(--muted); margin-top: 2px; display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+
+.mods { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
+.mods div { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 9px; font-size: 12px; font-weight: 500; }
+.mods .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--good); }
+.mods .down { border-color: var(--bad-soft); background: var(--bad-soft); color: var(--bad); }
+.mods .down .dot { background: var(--bad); }
+.mods small { margin-left: auto; font-size: 10.5px; color: var(--muted); font-weight: 400; }
+
+/* ---------- projekty ---------- */
+.toolbar { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.toolbar .search-f { display: flex; align-items: center; gap: 8px; border: 1px solid var(--line); background: var(--surface); border-radius: 9px; padding: 0 11px; color: var(--muted); flex: 1 1 220px; max-width: 300px; }
+.toolbar .search-f input { border: 0; outline: none; background: none; padding: 8px 0; width: 100%; font-size: 12.5px; color: var(--fg); }
+.toolbar .sp { flex: 1; }
+.count { font-size: 12px; color: var(--muted); }
+.tbl-wrap { overflow-x: auto; }
+.tbl { width: 100%; border-collapse: collapse; min-width: 760px; }
+.tbl th { font-size: 10.5px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); text-align: left; padding: 13px 16px; border-bottom: 1px solid var(--line); background: var(--surface); white-space: nowrap; }
+.tbl th.r, .tbl td.r { text-align: right; }
+.tbl td { padding: 14px 16px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+.tbl tr:last-child td { border-bottom: 0; }
+.tbl tbody tr { cursor: pointer; }
+.tbl tbody tr:hover td { background: var(--surface-2); }
+.cl b { display: block; font-weight: 600; font-size: 13.5px; }
+.cl span { font-size: 11.5px; color: var(--muted); }
+.svcs { display: flex; gap: 5px; flex-wrap: wrap; }
+.money { font-weight: 600; white-space: nowrap; }
+.money small { color: var(--muted); font-weight: 400; font-size: 11px; }
+.go { color: var(--faint); }
+tr:hover .go { color: var(--accent-ink); }
+.warn-ic { color: var(--warn); }
+.bad-ic { color: var(--bad); }
+
+/* ---------- klient ---------- */
+.crumbs { font-size: 12px; color: var(--muted); display: flex; gap: 6px; align-items: center; }
+.crumbs a { text-decoration: none; }
+.crumbs a:hover { color: var(--fg); }
+.crumbs b { color: var(--fg); font-weight: 500; }
+.hero { padding: 20px 22px; display: grid; gap: 18px; }
+.hero-top { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.hero .chips { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+.hero h2 { font-size: 26px; font-weight: 700; letter-spacing: -.02em; margin-top: 8px; }
+.hero .sub { font-size: 12.5px; color: var(--muted); }
+.hero .acts { display: flex; gap: 8px; align-items: flex-start; }
+.people { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+.person { display: flex; align-items: center; gap: 11px; padding: 11px 13px; border: 1px solid var(--line); border-radius: 11px; background: var(--surface-2); min-width: 0; }
+.person .t { min-width: 0; }
+.person b { display: block; font-weight: 600; font-size: 13px; }
+.person span { font-size: 11.5px; color: var(--muted); }
+.person .chip { margin-left: auto; }
+
+.tabs { display: flex; gap: 2px; border-bottom: 1px solid var(--line); overflow-x: auto; scrollbar-width: none; }
+.tab { border: 0; background: none; padding: 10px 14px 11px; font-size: 13px; font-weight: 500; color: var(--muted); border-bottom: 2px solid transparent; margin-bottom: -1px; white-space: nowrap; display: flex; align-items: center; gap: 7px; }
+.tab:hover { color: var(--fg); }
+.tab.on { color: var(--fg); font-weight: 600; border-bottom-color: var(--accent); }
+.tab .n { font-size: 10.5px; background: var(--surface-2); color: var(--muted); border-radius: 10px; padding: 0 7px; font-weight: 600; }
+.tab.ai { color: var(--blue); }
+.tab.ai.on { color: var(--fg); }
+
+.needs { background: var(--warn-soft); border: 1px solid var(--warn-line); border-radius: 12px; padding: 14px 18px; display: grid; gap: 6px; }
+.needs .eyebrow { color: var(--warn); }
+.needs div { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--fg); }
+.needs svg { color: var(--warn); }
+.kv { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 20px; }
+.kv > div { min-width: 0; }
+.kv label { display: block; font-size: 11px; color: var(--muted); }
+.kv p { margin: 1px 0 0; font-weight: 500; font-size: 13px; overflow-wrap: anywhere; }
+.kv p.hl { color: var(--accent-ink); font-weight: 600; }
+.kv .full { grid-column: 1 / -1; }
+.copy { border: 0; background: none; color: var(--faint); padding: 0 0 0 4px; vertical-align: -3px; }
+.copy:hover { color: var(--fg); }
+.overview { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 18px; }
+.overview .wide { grid-column: 1 / -1; }
+
+/* usługi */
+.svc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; }
+.svc-card { padding: 18px; display: grid; gap: 12px; align-content: start; text-align: left; border: 1px solid var(--line); background: var(--surface); border-radius: 14px; box-shadow: var(--shadow); }
+.svc-card.live { cursor: pointer; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+.svc-card.live:hover { transform: translateY(-1px); }
+.svc-card.off { background: var(--surface-2); box-shadow: none; color: var(--faint); cursor: not-allowed; }
+.svc-card.off .svc { background: var(--line); color: var(--muted); }
+.svc-card h3 { font-size: 16px; font-weight: 600; }
+.svc-card p { margin: 0; font-size: 12px; color: var(--muted); }
+.svc-card.off p, .svc-card.off h3 { color: var(--faint); }
+.svc-card .row { display: flex; align-items: center; gap: 8px; }
+.svc-card .row .r { margin-left: auto; }
+.svc-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.svc-stats div { background: var(--surface-2); border-radius: 9px; padding: 8px 10px; }
+.svc-stats b { display: block; font-family: var(--font-num); font-size: 20px; font-weight: 400; letter-spacing: .01em; }
+.svc-stats span { font-size: 10.5px; color: var(--muted); }
+.up { color: var(--good); font-size: 11px; font-weight: 600; }
+.modst { font-size: 11px; display: inline-flex; gap: 5px; align-items: center; color: var(--good); font-weight: 500; }
+.modst::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.modst.down { color: var(--bad); }
+.lock { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; color: var(--faint); }
+
+/* zespół */
+.team-row { display: flex; align-items: center; gap: 14px; padding: 16px 20px; flex-wrap: wrap; }
+.team-row .t { flex: 1; min-width: 180px; }
+.team-row b { font-size: 14.5px; font-weight: 600; display: block; }
+.team-row .contact { display: flex; gap: 18px; font-size: 12px; color: var(--muted); flex-wrap: wrap; }
+.team-row .contact span { display: inline-flex; gap: 6px; align-items: center; }
+
+/* dokumenty */
+.docs { display: grid; }
+.doc { display: grid; grid-template-columns: 36px minmax(0,1fr) auto; gap: 12px; align-items: center; padding: 11px 20px; border-top: 1px solid var(--line); }
+.doc:first-child { border-top: 0; }
+.doc .ic { width: 36px; height: 36px; border-radius: 9px; display: grid; place-items: center; font-size: 10px; font-weight: 700; }
+.doc b { font-weight: 500; font-size: 13px; display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.doc span { font-size: 11.5px; color: var(--muted); }
+.ic-pdf { background: var(--bad-soft); color: var(--bad); }
+.ic-docx { background: var(--blue-soft); color: var(--blue); }
+.ic-sheet { background: var(--good-soft); color: var(--good); }
+.ic-gdoc { background: var(--blue-soft); color: var(--blue); }
+.ic-slides { background: var(--warn-soft); color: var(--warn); }
+.ic-file { background: var(--surface-2); color: var(--muted); }
+.addlink { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1.4fr) auto; gap: 8px; padding: 14px 20px; border-top: 1px solid var(--line); background: var(--surface-2); border-radius: 0 0 14px 14px; }
+.drop { border: 1.5px dashed var(--line-strong); border-radius: 12px; padding: 18px; text-align: center; color: var(--muted); font-size: 12.5px; display: grid; gap: 6px; justify-items: center; cursor: pointer; }
+.drop:hover, .drop.over { border-color: var(--accent); color: var(--fg); background: var(--accent-soft); }
+
+/* notatki */
+.notes { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; align-items: start; }
+.note { padding: 16px 18px; display: grid; gap: 8px; }
+.note h3 { font-size: 14.5px; font-weight: 600; }
+.note .body { white-space: pre-wrap; font-size: 13px; color: var(--fg-2); overflow-wrap: anywhere; }
+.note .meta { font-size: 11px; color: var(--muted); display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.note .acts { display: flex; gap: 4px; justify-content: flex-end; border-top: 1px solid var(--line); padding-top: 8px; margin-top: 2px; }
+.note.editing { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+.note .confirm { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--bad); margin-right: auto; }
+.pin { color: var(--accent-ink); }
+
+/* aktywność */
+.filters { display: flex; gap: 6px; flex-wrap: wrap; }
+.fbtn { border: 1px solid var(--line); background: var(--surface); padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 500; color: var(--muted); }
+.fbtn.on { background: var(--fg); color: var(--surface); border-color: var(--fg); }
+.tl { display: grid; padding: 6px 20px 14px; }
+.tl-m { font-size: 11px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); padding: 14px 0 6px 46px; }
+.tl-i { display: grid; grid-template-columns: 30px minmax(0,1fr) auto; gap: 16px; padding: 8px 0; position: relative; }
+.tl-i::before { content: ""; position: absolute; left: 14.5px; top: 38px; bottom: -8px; width: 1px; background: var(--line); }
+.tl-i:last-child::before { display: none; }
+.tl-dot { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; z-index: 1; }
+.tl-dot svg.i { width: 14px; height: 14px; }
+.src-seo { background: var(--accent-soft); color: var(--accent-ink); }
+.src-pm { background: var(--blue-soft); color: var(--blue); }
+.src-sys { background: var(--surface-2); color: var(--muted); }
+.src-klient { background: var(--good-soft); color: var(--good); }
+.tl-i p { margin: 0; font-size: 13px; }
+.tl-i .meta { font-size: 11.5px; color: var(--muted); }
+.tl-i time { font-size: 11.5px; color: var(--muted); white-space: nowrap; }
+
+/* czat */
+.chat { display: grid; grid-template-columns: minmax(0,1fr) 260px; gap: 18px; align-items: start; }
+.chat-box { display: flex; flex-direction: column; height: min(640px, calc(100dvh - 330px)); min-height: 420px; }
+.chat-h { display: flex; align-items: center; gap: 10px; padding: 14px 18px; border-bottom: 1px solid var(--line); }
+.bot { width: 32px; height: 32px; border-radius: 9px; background: var(--brand-blue); color: #fff; display: grid; place-items: center; }
+.chat-h b { font-size: 13.5px; font-weight: 600; display: block; }
+.chat-h span { font-size: 11px; color: var(--muted); }
+.msgs { flex: 1; overflow-y: auto; padding: 18px; display: flex; flex-direction: column; gap: 12px; }
+.msg { max-width: 78%; padding: 10px 14px; border-radius: 13px; font-size: 13px; line-height: 1.55; white-space: pre-wrap; overflow-wrap: anywhere; }
+.msg.me { align-self: flex-end; background: var(--brand-black); color: #fff; border-bottom-right-radius: 4px; }
+.msg.ai { align-self: flex-start; background: var(--surface-2); border-bottom-left-radius: 4px; }
+.msg.ai .src { display: block; margin-top: 8px; font-size: 10.5px; color: var(--muted); white-space: normal; }
+.typing { display: inline-flex; gap: 4px; }
+.typing i { width: 6px; height: 6px; border-radius: 50%; background: var(--muted); animation: blink 1s infinite; }
+.typing i:nth-child(2) { animation-delay: .15s; } .typing i:nth-child(3) { animation-delay: .3s; }
+@keyframes blink { 0%, 80%, 100% { opacity: .25 } 40% { opacity: 1 } }
+.sugg { display: flex; gap: 6px; flex-wrap: wrap; padding: 0 18px 10px; }
+.sugg button { border: 1px solid var(--line); background: var(--surface); border-radius: 20px; padding: 5px 11px; font-size: 11.5px; color: var(--fg-2); }
+.sugg button:hover { border-color: var(--accent); color: var(--fg); }
+.chat-in { display: flex; gap: 8px; padding: 12px 14px; border-top: 1px solid var(--line); }
+.chat-in input { flex: 1; min-width: 0; }
+.ctx { padding: 16px 18px; display: grid; gap: 10px; font-size: 12px; }
+.ctx ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 7px; }
+.ctx li { display: flex; gap: 8px; align-items: center; color: var(--fg-2); }
+.ctx li svg { color: var(--good); }
+
+/* placeholder usługi */
+.soon { padding: 40px 28px; display: grid; gap: 12px; justify-items: start; }
+.soon .big { font-family: var(--font-num); font-size: 64px; line-height: 1; color: var(--accent); }
+.soon p { max-width: 60ch; margin: 0; color: var(--fg-2); }
+.soon ul { margin: 0; padding-left: 18px; color: var(--fg-2); display: grid; gap: 4px; }
+
+.toast { position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%) translateY(20px); background: var(--brand-black); color: #fff; padding: 10px 16px; border-radius: 10px; font-size: 12.5px; opacity: 0; pointer-events: none; transition: .2s; z-index: 50; max-width: calc(100% - 32px); }
+.toast.show { opacity: 1; transform: translateX(-50%); }
+.scrim { display: none; }
+
+@media (max-width: 1180px) {
+  .kpis { grid-template-columns: repeat(2, minmax(0,1fr)); }
+  .grid-2, .chat { grid-template-columns: minmax(0, 1fr); }
+  .search { width: 190px; }
+}
+@media (max-width: 900px) {
+  .app { grid-template-columns: minmax(0, 1fr); }
+  .side { position: fixed; left: 0; top: 0; bottom: 0; width: 256px; z-index: 40; transform: translateX(-100%); transition: transform .2s; padding-top: calc(18px + env(safe-area-inset-top, 0px)); }
+  .app.open .side { transform: none; }
+  .app.open .scrim { display: block; position: fixed; inset: 0; background: rgba(0,0,0,.4); z-index: 30; }
+  .menu-btn { display: grid; }
+  .top { padding: 10px 16px; gap: 8px; }
+  .search, .me-txt, .sample { display: none; }
+  .me { border: 0; padding: 0; margin-left: auto; }
+  .page { padding: 18px 16px 40px; }
+  .overview { grid-template-columns: minmax(0, 1fr); }
+  .addlink { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 520px) {
+  .kpis { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 10px; }
+  .kpi .v { font-size: 28px; }
+  .kv { grid-template-columns: minmax(0, 1fr); }
+  .hero h2 { font-size: 22px; }
+  .notes { grid-template-columns: minmax(0, 1fr); }
+  .msg { max-width: 90%; }
+  .svc-grid { grid-template-columns: minmax(0, 1fr); }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+</style>
+
+<div class="app" id="app">
+  <aside class="side" id="side">
+    <div class="logo"><div class="logo-mark">in</div><div>inCRM<small>INMARKETING</small></div></div>
+    <a class="nav" href="#pulpit" data-nav="pulpit"><svg class="i"><use href="#i-home"/></svg>Pulpit</a>
+    <a class="nav" href="#projekty" data-nav="projekty"><svg class="i"><use href="#i-folder"/></svg>Projekty</a>
+    <button class="nav" data-soon="Kalendarz"><svg class="i"><use href="#i-cal"/></svg>Kalendarz<span class="tag">WKRÓTCE</span></button>
+    <button class="nav" data-soon="Raporty"><svg class="i"><use href="#i-chart"/></svg>Raporty<span class="tag">WKRÓTCE</span></button>
+    <div class="side-label">Moduły usług</div>
+    <div id="side-mods"></div>
+    <div class="side-foot">
+      <button class="nav" data-soon="Ustawienia"><svg class="i"><use href="#i-cog"/></svg>Ustawienia</button>
+      <div class="role">
+        <span>Widok roli</span>
+        <div class="role-sw"><span class="on">PM</span><span title="Wkrótce">Specjalista</span><span title="Wkrótce">Admin</span></div>
+      </div>
+    </div>
+  </aside>
+  <div class="scrim" id="scrim"></div>
+  <div class="main">
+    <header class="top">
+      <button class="menu-btn icon-btn" id="menu" aria-label="Menu"><svg class="i"><use href="#i-menu"/></svg></button>
+      <h1 id="title">Pulpit</h1>
+      <span class="sample">DANE PRZYKŁADOWE</span>
+      <label class="search"><svg class="i"><use href="#i-search"/></svg><input id="gsearch" placeholder="Szukaj klienta…" autocomplete="off"></label>
+      <button class="icon-btn" aria-label="Powiadomienia" data-soon="Powiadomienia"><svg class="i"><use href="#i-bell"/></svg><span class="badge"></span></button>
+      <div class="me"><div class="me-txt"><b>Anna Lis</b><span>Project Manager</span></div><div class="av" style="background:#27398A">AL</div></div>
+    </header>
+    <main class="page" id="page"></main>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+<input type="file" id="file" multiple hidden>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></symbol>
+  <symbol id="i-folder" viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></symbol>
+  <symbol id="i-cal" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></symbol>
+  <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></symbol>
+  <symbol id="i-cog" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></symbol>
+  <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></symbol>
+  <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.9 1.9 0 0 0 3.4 0"/></symbol>
+  <symbol id="i-right" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+  <symbol id="i-left" viewBox="0 0 24 24"><path d="M19 12H5M11 18l-6-6 6-6"/></symbol>
+  <symbol id="i-edit" viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0zM12 9v4M12 17h.01"/></symbol>
+  <symbol id="i-link" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/></symbol>
+  <symbol id="i-upload" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></symbol>
+  <symbol id="i-send" viewBox="0 0 24 24"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/></symbol>
+  <symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5 18 18M6 18l2.5-2.5M15.5 8.5 18 6"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+  <symbol id="i-phone" viewBox="0 0 24 24"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/></symbol>
+  <symbol id="i-mail" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 6-10 7L2 6"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></symbol>
+  <symbol id="i-ext" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14 21 3"/></symbol>
+  <symbol id="i-dl" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></symbol>
+  <symbol id="i-cal2" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></symbol>
+  <symbol id="i-file" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zM14 2v6h6M8 13h8M8 17h5"/></symbol>
+  <symbol id="i-layers" viewBox="0 0 24 24"><path d="m12 2 10 5-10 5L2 7zM2 17l10 5 10-5M2 12l10 5 10-5"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></symbol>
+  <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 17v5M9 10.8V4h6v6.8l3 3.2v2H6v-2z"/></symbol>
+  <symbol id="i-msg" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></symbol>
+</svg>
+
+<script>
+(function () {
+"use strict";
+
+/* ================= DANE PRZYKŁADOWE ================= */
+const TODAY = new Date("2026-09-30T12:00:00");
+
+const MODULES = [
+  { id: "seo", name: "SEO", up: true },
+  { id: "gads", name: "Google Ads", up: true },
+  { id: "meta", name: "Meta Ads", up: true },
+  { id: "tiktok", name: "TikTok Ads", up: false },
+  { id: "linkedin", name: "LinkedIn Ads", up: true },
+  { id: "social", name: "Social Media", up: true },
+  { id: "content", name: "Content", up: true },
+  { id: "www", name: "Strony WWW", up: true },
+  { id: "analytics", name: "Analityka", up: true }
+];
+const MOD = Object.fromEntries(MODULES.map(m => [m.id, m]));
+const MOD_DESC = {
+  seo: "Pozycjonowanie, audyty techniczne, content i link building.",
+  gads: "Kampanie w wyszukiwarce, PMax i Shopping.",
+  meta: "Kampanie na Facebooku i Instagramie.",
+  tiktok: "Kampanie wideo na TikToku.",
+  linkedin: "Kampanie B2B i lead generation.",
+  social: "Prowadzenie profili i publikacje organiczne.",
+  content: "Copywriting, blog, e-mail marketing.",
+  www: "Projektowanie i utrzymanie stron.",
+  analytics: "Wdrożenia GA4, GTM i dashboardy."
+};
+
+const PEOPLE = {
+  mk: { name: "Mikołaj Konieczny", role: "Specjalista SEO", ini: "MK", color: "#FF6F61", email: "mikolaj.konieczny@inmarketing.pl", phone: "+48 600 111 222" },
+  al: { name: "Anna Lis", role: "Project Manager", ini: "AL", color: "#27398A" },
+  pw: { name: "Piotr Wrona", role: "Specjalista Google Ads", ini: "PW", color: "#17885A" },
+  ks: { name: "Kasia Sowa", role: "Specjalistka Meta Ads", ini: "KS", color: "#B26A00" },
+  sys: { name: "System", role: "", ini: "·", color: "#6D717C" }
+};
+
+const CLIENTS = [
+  {
+    id: "simple", name: "Simple", legal: "Simple Sp. z o.o.", agreement: "Umowa o świadczenie usług SEO",
+    tier: "C", status: "aktywny", services: ["seo"], budget: 8000, start: "2026-06-01", type: "Stała współpraca",
+    lastContact: "2026-09-24", team: ["mk"],
+    attention: [
+      { sev: "warn", text: "Ewaluacja po 4 miesiącach — 1 paź 2026" },
+      { sev: "warn", text: "Raport SEO za wrzesień do wysłania do 5 paź 2026" }
+    ],
+    comment: "Klient zadowolony z pierwszych efektów: +18% fraz w TOP10 od startu. Na październik plan rozbudowy bloga (8 artykułów) i poprawki Core Web Vitals na kartach produktów. Na ewaluacji zaproponować rozszerzenie o Google Ads.",
+    dates: { contractStart: "2026-06-01", workStart: "2026-06-03", evaluation: "2026-10-01", minTerm: "2026-11-30", indexation: "2027-06-01", report: "do 5. dnia miesiąca" },
+    billing: { name: "Simple Sp. z o.o.", nip: "PL 7811234567", address: "ul. Półwiejska 12, 61-888 Poznań", invoiceEmail: "faktury@simple-przyklad.pl", terms: "Faktura z góry, termin 14 dni", notice: "1 miesiąc, min. okres do 30 lis 2026" },
+    contact: { name: "Tomasz Mazur", role: "Head of E-commerce", phone: "+48 512 345 678", email: "tomasz.mazur@simple-przyklad.pl", prefers: "Telefon rano, raporty mailem" },
+    seo: { top10: 142, top10d: "+18%", traffic: "4 820", trafficd: "+12%", health: "86/100" }
+  },
+  { id: "nordwood", name: "Nordwood", legal: "Nordwood S.A.", tier: "S", status: "aktywny", services: ["seo", "gads", "meta"], budget: 32000, start: "2025-03-01", lastContact: "2026-09-29", team: ["mk", "pw", "ks"], attention: [] },
+  { id: "autopart", name: "AutoPart Pro", legal: "AutoPart Pro Sp. z o.o.", tier: "A", status: "aktywny", services: ["gads", "seo"], budget: 18000, start: "2025-11-01", lastContact: "2026-09-18", team: ["pw", "mk"], attention: [{ sev: "warn", text: "Koniec minimalnego okresu umowy — 31 paź 2026" }] },
+  { id: "medica", name: "Medica Clinic", legal: "Medica Clinic Sp. z o.o.", tier: "A", status: "zagrozony", services: ["gads", "content"], budget: 14000, start: "2025-01-10", lastContact: "2026-09-08", team: ["pw"], attention: [{ sev: "bad", text: "Spadek konwersji o 22% m/m — klient prosi o spotkanie" }, { sev: "bad", text: "Brak kontaktu od 22 dni" }] },
+  { id: "flora", name: "Flora Studio", legal: "Flora Studio s.c.", tier: "B", status: "onboarding", services: ["meta", "social"], budget: 6500, start: "2026-09-15", lastContact: "2026-09-28", team: ["ks"], attention: [{ sev: "info", text: "Onboarding: brakuje dostępu do Menedżera firmy" }] },
+  { id: "techhub", name: "TechHub", legal: "TechHub Sp. z o.o.", tier: "B", status: "wstrzymany", services: ["seo", "tiktok"], budget: 5000, start: "2026-02-01", lastContact: "2026-09-02", team: ["mk"], attention: [{ sev: "warn", text: "Współpraca wstrzymana do 15 paź — potwierdzić wznowienie" }] },
+  { id: "brewers", name: "Brewers & Co", legal: "Brewers & Co Sp. z o.o.", tier: "C", status: "aktywny", services: ["meta"], budget: 4000, start: "2026-04-01", lastContact: "2026-09-22", team: ["ks"], attention: [] }
+];
+const CL = Object.fromEntries(CLIENTS.map(c => [c.id, c]));
+
+const STATUS = { aktywny: "Aktywny", onboarding: "Onboarding", zagrozony: "Zagrożony", wstrzymany: "Wstrzymany", zakonczony: "Zakończony" };
+
+const DOCS_SEED = {
+  simple: [
+    { kind: "pdf", title: "Umowa o świadczenie usług SEO — Simple.pdf", meta: "PDF · 412 KB · dodano 28 maj 2026 przez Anna Lis" },
+    { kind: "pdf", title: "Aneks nr 1 — zakres content.pdf", meta: "PDF · 188 KB · dodano 12 sie 2026 przez Anna Lis" },
+    { kind: "docx", title: "Brief klienta — Simple.docx", meta: "DOCX · 64 KB · dodano 20 maj 2026 przez Anna Lis" },
+    { kind: "pdf", title: "Audyt SEO — czerwiec 2026.pdf", meta: "PDF · 2,1 MB · dodano 24 cze 2026 przez Mikołaj Konieczny" },
+    { kind: "sheet", title: "Słowa kluczowe i mapowanie URL", meta: "Arkusz Google · edytowano 29 wrz 2026", url: "https://docs.google.com/spreadsheets/" },
+    { kind: "gdoc", title: "Strategia SEO 2026/27", meta: "Dokument Google · edytowano 10 wrz 2026", url: "https://docs.google.com/document/" },
+    { kind: "slides", title: "Raport kwartalny Q3 — prezentacja", meta: "Prezentacja Google · edytowano 27 wrz 2026", url: "https://docs.google.com/presentation/" }
+  ]
+};
+
+const NOTES_SEED = {
+  simple: [
+    { id: "n1", title: "Ustalenia z kick-offu", body: "• Priorytet: kategorie „sofy” i „fotele”, potem blog poradnikowy.\n• Raporty miesięczne mailem do Tomasza, kopia do Marty (marketing).\n• Akceptacja treści na blog: do 3 dni roboczych.\n• Klient nie chce zmian w nawigacji głównej przed Black Friday.", author: "Anna Lis", date: "2026-06-02", pinned: true },
+    { id: "n2", title: "Ewaluacja — co przygotować", body: "Porównanie widoczności czerwiec vs wrzesień, ruch organiczny z GA4, lista wdrożonych rekomendacji.\nZapytać o budżet na Google Ads od listopada — klient wspominał o sezonie.", author: "Anna Lis", date: "2026-09-25", pinned: false },
+    { id: "n3", title: "Dostępy", body: "GSC i GA4: nadane 3 cze.\nCMS (WordPress): konto dla Mikołaja, rola Redaktor.\nBrak dostępu do serwera — zmiany techniczne przez developera klienta (Paweł, pawel@simple-przyklad.pl).", author: "Mikołaj Konieczny", date: "2026-06-05", pinned: false }
+  ]
+};
+
+const ACTIVITY = {
+  simple: [
+    { src: "seo", who: "mk", text: "Opublikowano 2 artykuły na blogu: „Jak dobrać sofę do salonu” i „Fotel do czytania — poradnik”", date: "2026-09-29T14:20" },
+    { src: "seo", who: "mk", text: "Zaktualizowano arkusz „Słowa kluczowe i mapowanie URL” (+34 frazy)", date: "2026-09-29T10:05" },
+    { src: "pm", who: "al", text: "Rozmowa telefoniczna z Tomaszem Mazurem — potwierdzony termin ewaluacji 1 paź, 10:00", date: "2026-09-24T09:40" },
+    { src: "seo", who: "mk", text: "Wdrożono dane strukturalne Product na 212 kartach produktów", date: "2026-09-18T16:10" },
+    { src: "klient", who: null, who2: "Tomasz Mazur", text: "Klient zaakceptował plan treści na październik", date: "2026-09-15T11:30" },
+    { src: "sys", who: "sys", text: "Faktura FV/09/2026/114 wystawiona — 8 000 zł netto", date: "2026-09-01T08:00" },
+    { src: "pm", who: "al", text: "Wysłano raport SEO za sierpień", date: "2026-09-04T13:15" },
+    { src: "seo", who: "mk", text: "Audyt Core Web Vitals: LCP 3,4 s na kartach produktów — zgłoszono do developera klienta", date: "2026-08-21T15:00" },
+    { src: "pm", who: "al", text: "Dodano aneks nr 1 — zakres content (+4 artykuły/mies.)", date: "2026-08-12T10:20" },
+    { src: "seo", who: "mk", text: "Zakończono optymalizację meta title i description w 48 kategoriach", date: "2026-07-16T12:45" },
+    { src: "seo", who: "mk", text: "Przekazano audyt SEO (czerwiec 2026)", date: "2026-06-24T17:00" },
+    { src: "pm", who: "al", text: "Spotkanie kick-off z klientem", date: "2026-06-02T11:00" },
+    { src: "sys", who: "sys", text: "Utworzono projekt Simple · moduł SEO przypisany", date: "2026-06-01T09:00" }
+  ]
+};
+
+const DASH_AGENDA = [
+  { day: "Dziś · śr 30 wrz", items: [
+    { t: "11:00", title: "Status z Nordwood", sub: "Google Meet · Piotr, Kasia, Mikołaj", c: "var(--blue)" },
+    { t: "15:30", title: "Przygotować ewaluację Simple", sub: "Zadanie · slajdy z Mikołajem", c: "var(--accent)" }
+  ]},
+  { day: "Jutro · czw 1 paź", items: [
+    { t: "10:00", title: "Ewaluacja 4-miesięczna — Simple", sub: "Biuro klienta, Poznań · Tomasz Mazur", c: "var(--accent)" },
+    { t: "14:00", title: "Medica Clinic — spotkanie kryzysowe", sub: "Teams · spadek konwersji", c: "var(--bad)" }
+  ]},
+  { day: "Pt 2 paź", items: [
+    { t: "12:00", title: "Onboarding Flora Studio — dostępy", sub: "Telefon · właścicielka", c: "var(--blue)" }
+  ]},
+  { day: "Pn 5 paź", items: [
+    { t: "cały", title: "Termin raportów miesięcznych (5 klientów)", sub: "Simple, Nordwood, AutoPart Pro, Medica, Brewers", c: "var(--warn)" }
+  ]}
+];
+
+const DASH_FEED = [
+  { who: "mk", client: "simple", mod: "seo", text: "opublikował 2 artykuły na blogu", when: "wczoraj, 14:20" },
+  { who: "pw", client: "nordwood", mod: "gads", text: "podniósł budżet kampanii PMax o 15%", when: "wczoraj, 11:02" },
+  { who: "ks", client: "flora", mod: "meta", text: "przygotowała 3 kreacje do akceptacji", when: "28 wrz, 16:45" },
+  { who: "mk", client: "autopart", mod: "seo", text: "zgłosił 38 błędów 404 po migracji sklepu", when: "28 wrz, 09:10" },
+  { who: "pw", client: "medica", mod: "gads", text: "wstrzymał 2 grupy reklam o niskim CR", when: "27 wrz, 13:30" }
+];
+
+/* ================= STAN ================= */
+const store = {
+  get(k, d) { try { const v = localStorage.getItem("incrm." + k); return v ? JSON.parse(v) : d; } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem("incrm." + k, JSON.stringify(v)); } catch (e) {} }
+};
+const state = {
+  notes: store.get("notes", NOTES_SEED),
+  docs: store.get("docs", DOCS_SEED),
+  editing: null, confirmDel: null,
+  actFilter: "all",
+  filters: { q: "", status: "", tier: "", svc: "" },
+  chats: {}
+};
+
+/* ================= POMOCNICZE ================= */
+const MS = ["sty", "lut", "mar", "kwi", "maj", "cze", "lip", "sie", "wrz", "paź", "lis", "gru"];
+const ML = ["stycznia", "lutego", "marca", "kwietnia", "maja", "czerwca", "lipca", "sierpnia", "września", "października", "listopada", "grudnia"];
+const d = s => new Date(s.length <= 10 ? s + "T12:00:00" : s);
+const fmt = s => { const x = d(s); return `${x.getDate()} ${MS[x.getMonth()]} ${x.getFullYear()}`; };
+const fmtL = s => { const x = d(s); return `${x.getDate()} ${ML[x.getMonth()]} ${x.getFullYear()}`; };
+const hm = s => { const x = d(s); return String(x.getHours()).padStart(2, "0") + ":" + String(x.getMinutes()).padStart(2, "0"); };
+const days = s => Math.round((TODAY - d(s)) / 864e5);
+const pln = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, " ") + " zł";
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const ic = (n, cls = "") => `<svg class="i ${cls}"><use href="#i-${n}"/></svg>`;
+const av = (p, lg) => `<div class="av${lg ? " lg" : ""}" style="background:${p.color}">${p.ini}</div>`;
+const chipSt = s => `<span class="chip st-${s}"><span class="d"></span>${STATUS[s]}</span>`;
+const tier = t => `<span class="tier tier-${t}" title="Tier ${t}">${t}</span>`;
+const svcChips = (list, max = 3) => list.slice(0, max).map(s => `<span class="svc">${MOD[s].name}</span>`).join("") + (list.length > max ? `<span class="svc more">+${list.length - max}</span>` : "");
+const $ = s => document.querySelector(s);
+function toast(msg) { const t = $("#toast"); t.textContent = msg; t.classList.add("show"); clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove("show"), 2400); }
+function copy(text) {
+  const done = () => toast("Skopiowano: " + text);
+  try { navigator.clipboard.writeText(text).then(done, () => toast(text)); } catch (e) { toast(text); }
+}
+
+/* ================= ROUTING ================= */
+// #pulpit | #projekty | #klient.simple.przeglad | #usluga.simple.seo
+const TABS = [
+  ["przeglad", "Przegląd"], ["uslugi", "Usługi"], ["zespol", "Zespół"], ["dokumenty", "Dokumenty"],
+  ["notatki", "Notatki"], ["aktywnosc", "Aktywność"], ["czat", "Czat AI"]
+];
+function parse() {
+  const h = (location.hash || "#pulpit").slice(1).split(".");
+  return { view: h[0] || "pulpit", id: h[1], tab: h[2] || "przeglad" };
+}
+function go(hash) { if (location.hash === "#" + hash) render(); else location.hash = hash; }
+window.addEventListener("hashchange", () => { render(); window.scrollTo(0, 0); });
+
+/* ================= SIDEBAR ================= */
+function renderSide(r) {
+  $("#side-mods").innerHTML = MODULES.map(m =>
+    `<div class="mod${m.up ? "" : " down"}" title="Kontener ${m.id}-service"><span class="dot"></span>${m.name}<span class="st">${m.up ? "" : "restart…"}</span></div>`).join("");
+  const active = r.view === "pulpit" ? "pulpit" : "projekty";
+  document.querySelectorAll("[data-nav]").forEach(a => a.classList.toggle("on", a.dataset.nav === active));
+}
+
+/* ================= PULPIT ================= */
+function viewDashboard() {
+  const running = CLIENTS.filter(c => c.status !== "zakonczony" && c.status !== "wstrzymany");
+  const budget = running.reduce((s, c) => s + c.budget, 0);
+  const att = CLIENTS.flatMap(c => c.attention.map(a => ({ ...a, c })));
+  const order = { bad: 0, warn: 1, info: 2 };
+  att.sort((a, b) => order[a.sev] - order[b.sev]);
+  const down = MODULES.filter(m => !m.up);
+
+  const pulse = [...CLIENTS].sort((a, b) => days(b.lastContact) - days(a.lastContact)).map(c => {
+    const n = days(c.lastContact);
+    const col = n > 14 ? "var(--bad)" : n > 7 ? "var(--warn)" : "var(--good)";
+    return `<tr data-go="klient.${c.id}"><td><b style="font-weight:600">${esc(c.name)}</b></td><td>${tier(c.tier)}</td><td>${chipSt(c.status)}</td>
+      <td style="width:34%"><div class="bar"><i style="width:${Math.min(100, n / 28 * 100)}%;background:${col}"></i></div></td>
+      <td class="num" style="white-space:nowrap;color:${col};font-weight:600">${n === 0 ? "dziś" : n + " dni"}</td></tr>`;
+  }).join("");
+
+  return `
+  <div class="hello">
+    <div><h2>Dzień dobry, Anna</h2><p>Środa, 30 września 2026 · masz ${att.length} spraw wymagających uwagi i 2 spotkania dziś</p></div>
+    <a class="btn primary" href="#projekty">${ic("folder")}Wszystkie projekty</a>
+  </div>
+
+  <section class="kpis">
+    <div class="card kpi"><span class="eyebrow">Aktywni klienci</span><span class="v num">${running.length}<small>/ ${CLIENTS.length}</small></span><span class="s">1 w onboardingu, 1 wstrzymany</span></div>
+    <div class="card kpi"><span class="eyebrow">Budżet pod opieką</span><span class="v num">${Math.round(budget / 1000)}k<small>zł / mies.</small></span><span class="s">+6 500 zł od września (Flora Studio)</span></div>
+    <div class="card kpi"><span class="eyebrow">Raporty do wysłania</span><span class="v num">5<small>do 5 paź</small></span><span class="s">0 z 5 gotowych</span></div>
+    <div class="card kpi hot"><span class="eyebrow">Wymaga uwagi</span><span class="v num">${att.length}</span><span class="s">${att.filter(a => a.sev === "bad").length} krytyczne · Medica Clinic</span></div>
+  </section>
+
+  <div class="grid-2">
+    <div class="col">
+      <section class="card">
+        <div class="card-h"><h2>${ic("alert")}Wymaga Twojej uwagi</h2><span class="aside">posortowane wg wagi</span></div>
+        <div class="card-b att">
+          ${att.map(a => `<div class="att-row"><span class="sev ${a.sev}"></span>
+            <div><b>${esc(a.c.name)}</b><p>${esc(a.text)}</p></div>
+            <a class="btn sm" href="#klient.${a.c.id}">Otwórz</a></div>`).join("")}
+        </div>
+      </section>
+      <section class="card">
+        <div class="card-h"><h2>${ic("phone")}Puls kontaktu z klientami</h2><span class="aside">dni od ostatniego kontaktu</span></div>
+        <div class="card-b tbl-wrap">
+          <table class="pulse"><thead><tr><th>Klient</th><th>Tier</th><th>Status</th><th></th><th>Kontakt</th></tr></thead><tbody>${pulse}</tbody></table>
+        </div>
+      </section>
+    </div>
+    <div class="col">
+      <section class="card">
+        <div class="card-h"><h2>${ic("cal")}Najbliższe dni</h2></div>
+        <div class="card-b agenda">
+          ${DASH_AGENDA.map(g => `<div class="ag-day">${g.day}</div>` + g.items.map(i =>
+            `<div class="ag"><time class="num">${i.t}</time><div><b><span class="k" style="background:${i.c}"></span>${esc(i.title)}</b><span>${esc(i.sub)}</span></div></div>`).join("")).join("")}
+        </div>
+      </section>
+      <section class="card">
+        <div class="card-h"><h2>${ic("layers")}Z modułów usług</h2><span class="aside">praca specjalistów</span></div>
+        <div class="card-b feed">
+          ${DASH_FEED.map(f => { const p = PEOPLE[f.who]; return `<div class="fi">${av(p)}<div><p><b style="font-weight:600">${p.name.split(" ")[0]}</b> ${esc(f.text)}</p>
+            <div class="meta"><a class="link" href="#klient.${f.client}.aktywnosc">${esc(CL[f.client].name)}</a><span class="svc">${MOD[f.mod].name}</span><span>${f.when}</span></div></div></div>`; }).join("")}
+        </div>
+      </section>
+      <section class="card">
+        <div class="card-h"><h2>Stan modułów</h2><span class="aside">${MODULES.length - down.length}/${MODULES.length} działa</span></div>
+        <div class="card-b">
+          <div class="mods">${MODULES.map(m => `<div class="${m.up ? "" : "down"}"><span class="dot"></span>${m.name}<small>${m.up ? "OK" : "restart"}</small></div>`).join("")}</div>
+          ${down.length ? `<p class="muted" style="margin:10px 0 0;font-size:11.5px">Moduł ${down.map(m => m.name).join(", ")} jest restartowany. Pozostałe usługi i dane klientów działają bez zmian.</p>` : ""}
+        </div>
+      </section>
+    </div>
+  </div>`;
+}
+
+/* ================= PROJEKTY ================= */
+function viewProjects() {
+  const f = state.filters;
+  const rows = CLIENTS.filter(c =>
+    (!f.q || (c.name + " " + c.legal).toLowerCase().includes(f.q.toLowerCase())) &&
+    (!f.status || c.status === f.status) && (!f.tier || c.tier === f.tier) && (!f.svc || c.services.includes(f.svc)));
+  const opt = (v, label, cur) => `<option value="${v}"${v === cur ? " selected" : ""}>${label}</option>`;
+  return `
+  <div class="toolbar">
+    <label class="search-f">${ic("search")}<input id="pq" placeholder="Szukaj klienta…" value="${esc(f.q)}" autocomplete="off"></label>
+    <select class="f" id="pstatus" aria-label="Status">${opt("", "Wszystkie statusy", f.status)}${Object.entries(STATUS).map(([k, v]) => opt(k, v, f.status)).join("")}</select>
+    <select class="f" id="ptier" aria-label="Tier">${opt("", "Wszystkie tiery", f.tier)}${["S", "A", "B", "C"].map(t => opt(t, "Tier " + t, f.tier)).join("")}</select>
+    <select class="f" id="psvc" aria-label="Usługa">${opt("", "Wszystkie usługi", f.svc)}${MODULES.map(m => opt(m.id, m.name, f.svc)).join("")}</select>
+    <span class="count">${rows.length} z ${CLIENTS.length}</span>
+    <span class="sp"></span>
+    <button class="btn" data-soon="Eksport CSV">${ic("dl")}Eksport</button>
+    <button class="btn primary" data-soon="Dodawanie klienta">${ic("plus")}Dodaj klienta</button>
+  </div>
+  <section class="card tbl-wrap">
+    <table class="tbl">
+      <thead><tr><th style="width:28px"></th><th>Klient</th><th>Tier</th><th>Status</th><th>Usługi</th><th class="r">Budżet</th><th>Start</th><th style="width:30px"></th></tr></thead>
+      <tbody>
+      ${rows.map(c => {
+        const worst = c.attention.some(a => a.sev === "bad") ? "bad" : c.attention.some(a => a.sev === "warn") ? "warn" : "";
+        return `<tr data-go="klient.${c.id}">
+          <td>${worst ? `<span class="${worst}-ic" title="${esc(c.attention.map(a => a.text).join(" · "))}">${ic("alert")}</span>` : ""}</td>
+          <td class="cl"><b>${esc(c.name)}</b><span>${esc(c.legal)}</span></td>
+          <td>${tier(c.tier)}</td>
+          <td>${chipSt(c.status)}</td>
+          <td><div class="svcs">${svcChips(c.services)}</div></td>
+          <td class="r money num">${pln(c.budget)}<small> /mies.</small></td>
+          <td class="num" style="white-space:nowrap">${fmtL(c.start)}</td>
+          <td class="go">${ic("right")}</td></tr>`;
+      }).join("") || `<tr><td colspan="8" class="empty">Brak klientów dla tych filtrów.</td></tr>`}
+      </tbody>
+    </table>
+  </section>`;
+}
+
+/* ================= KLIENT ================= */
+function full(c) {
+  // klienci inni niż Simple dostają dane zastępcze, żeby widok był kompletny
+  if (c.dates) return c;
+  return Object.assign({}, c, {
+    agreement: "Umowa o świadczenie usług marketingowych", type: "Stała współpraca",
+    comment: "Szczegóły tego klienta pojawią się po imporcie danych. Pełny przykład: Simple.",
+    dates: { contractStart: c.start, workStart: c.start, evaluation: null, minTerm: null, indexation: null, report: "do 5. dnia miesiąca" },
+    billing: { name: c.legal, nip: "—", address: "—", invoiceEmail: "—", terms: "—", notice: "—" },
+    contact: { name: "—", role: "", phone: "—", email: "—", prefers: "—" }
+  });
+}
+
+function viewClient(r) {
+  const c0 = CL[r.id];
+  if (!c0) return `<div class="card empty">Nie znaleziono klienta. <a class="link" href="#projekty">Wróć do projektów</a></div>`;
+  const c = full(c0);
+  const specs = c.team.map(k => PEOPLE[k]);
+  const notesN = (state.notes[c.id] || []).length;
+  const docsN = (state.docs[c.id] || []).length;
+  const counts = { notatki: notesN, dokumenty: docsN, zespol: c.team.length, uslugi: c.services.length };
+  const body = { przeglad: tabOverview, uslugi: tabServices, zespol: tabTeam, dokumenty: tabDocs, notatki: tabNotes, aktywnosc: tabActivity, czat: tabChat }[r.tab] || tabOverview;
+
+  return `
+  <nav class="crumbs"><a href="#projekty">Projekty</a><span>/</span><b>${esc(c.name)}</b></nav>
+  <section class="card hero">
+    <div class="hero-top">
+      <div>
+        <div class="chips">${tier(c.tier)}${chipSt(c.status)}<span class="chip st-zakonczony">${esc(c.type)}</span>${c.services.map(s => `<span class="svc">${MOD[s].name}</span>`).join("")}</div>
+        <h2>${esc(c.name)}</h2>
+        <div class="sub">${esc(c.legal)} · ${esc(c.agreement)} · <span class="num">${pln(c.budget)}</span> netto / mies.</div>
+      </div>
+      <div class="acts">
+        <a class="btn" href="#projekty">${ic("left")}Wróć</a>
+        <button class="btn primary" data-soon="Edycja projektu">${ic("edit")}Edytuj projekt</button>
+      </div>
+    </div>
+    <div class="people">
+      <div class="person">${av(PEOPLE.al)}<div class="t"><span>Project Manager</span><b>Anna Lis</b></div><span class="chip st-aktywny"><span class="d"></span>Ty</span></div>
+      ${specs.map(p => `<div class="person">${av(p)}<div class="t"><span>${esc(p.role)}</span><b>${esc(p.name)}</b></div></div>`).join("")}
+      <div class="person">${av({ ini: c.contact.name === "—" ? "?" : c.contact.name.split(" ").map(x => x[0]).join(""), color: "#6D717C" })}<div class="t"><span>Kontakt po stronie klienta</span><b>${esc(c.contact.name)}</b></div></div>
+    </div>
+  </section>
+  <nav class="tabs" role="tablist">
+    ${TABS.map(([k, l]) => `<button class="tab${k === r.tab ? " on" : ""}${k === "czat" ? " ai" : ""}" role="tab" aria-selected="${k === r.tab}" data-go="klient.${c.id}.${k}">${k === "czat" ? ic("spark") : ""}${l}${counts[k] ? `<span class="n">${counts[k]}</span>` : ""}</button>`).join("")}
+  </nav>
+  ${body(c)}`;
+}
+
+function kv(label, val, opts = {}) {
+  if (val == null) val = "—";
+  return `<div class="${opts.full ? "full" : ""}"><label>${label}</label><p class="${opts.hl ? "hl" : ""} num">${esc(val)}${opts.copy && val !== "—" ? `<button class="copy" data-copy="${esc(val)}" aria-label="Kopiuj">${ic("copy")}</button>` : ""}</p></div>`;
+}
+
+function tabOverview(c) {
+  const D = c.dates, B = c.billing, K = c.contact;
+  const soon = s => s && days(s) > -45 && days(s) <= 0;
+  return `
+  ${c.attention.length ? `<div class="needs"><span class="eyebrow">Wymaga uwagi</span>${c.attention.map(a => `<div>${ic("alert")}${esc(a.text)}</div>`).join("")}</div>` : ""}
+  <section class="card"><div class="card-b" style="padding-top:16px"><span class="eyebrow">Komentarz statusowy · PM</span><p style="margin:6px 0 0;max-width:80ch">${esc(c.comment)}</p></div></section>
+  <div class="overview">
+    <section class="card"><div class="card-h"><h2>${ic("cal")}Kluczowe daty</h2></div><div class="card-b kv">
+      ${kv("Start umowy", D.contractStart && fmt(D.contractStart))}${kv("Start prac", D.workStart && fmt(D.workStart))}
+      ${kv("Ewaluacja", D.evaluation && fmt(D.evaluation), { hl: soon(D.evaluation) })}${kv("Minimalny okres umowy do", D.minTerm && fmt(D.minTerm))}
+      ${kv("Waloryzacja", D.indexation && fmt(D.indexation))}${kv("Raport miesięczny", D.report)}
+    </div></section>
+    <section class="card"><div class="card-h"><h2>${ic("phone")}Kontakt po stronie klienta</h2></div><div class="card-b kv">
+      ${kv("Osoba", K.name + (K.role ? " · " + K.role : ""), { full: true })}
+      ${kv("Telefon", K.phone, { copy: true })}${kv("E-mail", K.email, { copy: true })}
+      ${kv("Preferowany kontakt", K.prefers, { full: true })}
+    </div></section>
+    <section class="card"><div class="card-h"><h2>${ic("file")}Rozliczenia</h2></div><div class="card-b kv">
+      ${kv("Nazwa do faktury", B.name)}${kv("NIP", B.nip, { copy: true })}
+      ${kv("Adres", B.address, { full: true })}
+      ${kv("E-mail do faktur", B.invoiceEmail, { copy: true })}${kv("Warunki płatności", B.terms)}
+      ${kv("Okres wypowiedzenia", B.notice, { full: true })}
+    </div></section>
+    <section class="card"><div class="card-h"><h2>${ic("layers")}Usługi</h2><button class="link" style="margin-left:auto" data-go="klient.${c.id}.uslugi">Otwórz zakładkę ${ic("right")}</button></div><div class="card-b" style="display:grid;gap:10px">
+      ${c.services.map(s => `<div style="display:flex;align-items:center;gap:10px"><span class="svc">${MOD[s].name}</span><span class="modst${MOD[s].up ? "" : " down"}">${MOD[s].up ? "moduł działa" : "moduł niedostępny"}</span><span class="muted" style="margin-left:auto;font-size:12px">${c.team.map(k => PEOPLE[k]).filter(p => p.role.includes(MOD[s].name.split(" ")[0])).map(p => p.name).join(", ") || ""}</span></div>`).join("")}
+      ${c.seo ? `<div class="svc-stats" style="margin-top:4px"><div><b class="num">${c.seo.top10}</b><span>fraz w TOP10 <span class="up">${c.seo.top10d}</span></span></div><div><b class="num">${c.seo.traffic}</b><span>ruch org. / mies. <span class="up">${c.seo.trafficd}</span></span></div><div><b class="num">${c.seo.health}</b><span>kondycja strony</span></div></div>` : ""}
+    </div></section>
+  </div>`;
+}
+
+function tabServices(c) {
+  const cards = MODULES.map(m => {
+    const has = c.services.includes(m.id);
+    const live = has && m.id === "seo"; // w tym etapie działa wejście tylko w moduł SEO
+    const who = c.team.map(k => PEOPLE[k]).find(p => p.role.includes(m.name.split(" ")[0]));
+    if (live) return `<button class="svc-card live" data-go="usluga.${c.id}.${m.id}">
+      <div class="row"><span class="svc">${m.name}</span><span class="modst r">moduł działa</span></div>
+      <div><h3>${m.name}</h3><p>${MOD_DESC[m.id]}</p></div>
+      ${c.seo ? `<div class="svc-stats"><div><b class="num">${c.seo.top10}</b><span>TOP10</span></div><div><b class="num">${c.seo.traffic}</b><span>ruch/mies.</span></div><div><b class="num">${c.seo.health.split("/")[0]}</b><span>kondycja</span></div></div>` : ""}
+      <div class="row">${who ? av(who) + `<span style="font-size:12px">${who.name}</span>` : ""}<span class="link r">Otwórz moduł ${ic("right")}</span></div>
+    </button>`;
+    return `<div class="svc-card off" aria-disabled="true">
+      <div class="row"><span class="svc">${m.name}</span><span class="lock r">${ic("lock")}${has ? "Widok w budowie" : "Nie w umowie"}</span></div>
+      <div><h3>${m.name}</h3><p>${MOD_DESC[m.id]}</p></div>
+      <div class="row"><span style="font-size:11.5px">${has ? "Aktywna usługa" : "Możliwość rozszerzenia współpracy"}</span></div>
+    </div>`;
+  });
+  return `<p class="muted" style="margin:0;font-size:12.5px">Każda usługa to osobny moduł. Tu widzisz tylko to, co jest w umowie klienta. Pozostałe pokazujemy wyszarzone jako okazje do rozszerzenia.</p>
+  <div class="svc-grid">${cards.join("")}</div>`;
+}
+
+function tabTeam(c) {
+  const ppl = c.team.map(k => PEOPLE[k]);
+  return `<section class="card">
+    <div class="card-h"><h2>${ic("user")}Zespół projektu</h2><button class="btn sm" style="margin-left:auto" data-soon="Dodawanie osoby do zespołu">${ic("plus")}Dodaj osobę</button></div>
+    <div class="card-b" style="padding:8px 0 4px">
+    ${ppl.map((p, i) => `<div class="team-row" style="${i ? "border-top:1px solid var(--line)" : ""}">${av(p, true)}
+      <div class="t"><b>${esc(p.name)}</b><span class="muted" style="font-size:12.5px">${esc(p.role)}</span></div>
+      <div class="contact"><span>${ic("mail")}${esc(p.email || (p.name.split(" ")[0].toLowerCase() + "@inmarketing.pl"))}</span>${p.phone ? `<span>${ic("phone")}${esc(p.phone)}</span>` : ""}</div>
+      <span class="svc">${esc(p.role.replace("Specjalista ", "").replace("Specjalistka ", ""))}</span>
+    </div>`).join("")}
+    </div></section>`;
+}
+
+const KIND = { pdf: ["PDF", "ic-pdf"], docx: ["DOC", "ic-docx"], sheet: ["XLS", "ic-sheet"], gdoc: ["DOC", "ic-gdoc"], slides: ["PPT", "ic-slides"], file: ["PLIK", "ic-file"], link: ["URL", "ic-file"] };
+function kindFromUrl(u) {
+  if (/spreadsheets/.test(u)) return ["sheet", "Arkusz Google"];
+  if (/document/.test(u)) return ["gdoc", "Dokument Google"];
+  if (/presentation/.test(u)) return ["slides", "Prezentacja Google"];
+  return ["link", "Link"];
+}
+function tabDocs(c) {
+  const list = state.docs[c.id] || [];
+  const files = list.filter(x => !x.url), links = list.filter(x => x.url);
+  const row = (x, i) => { const k = KIND[x.kind] || KIND.file; const idx = list.indexOf(x);
+    return `<div class="doc"><div class="ic ${k[1]}">${k[0]}</div><div style="min-width:0"><b>${esc(x.title)}</b><span>${esc(x.meta)}</span></div>
+      <div style="display:flex;gap:4px">${x.url ? `<a class="btn sm" href="${esc(x.url)}" target="_blank" rel="noopener">${ic("ext")}Otwórz</a>` : `<button class="btn sm" data-soon="Pobieranie pliku">${ic("dl")}</button>`}
+      <button class="btn sm ghost" data-deldoc="${idx}" aria-label="Usuń">${ic("trash")}</button></div></div>`; };
+  return `<div class="overview">
+    <section class="card"><div class="card-h"><h2>${ic("file")}Załączniki</h2><span class="aside">${files.length}</span></div>
+      <div class="card-b" style="padding:10px 0 0"><div class="docs">${files.map(row).join("") || `<div class="empty">Brak plików</div>`}</div></div>
+      <div class="card-b"><div class="drop" id="drop" role="button" tabindex="0">${ic("upload")}<span><b style="font-weight:600;color:var(--fg)">Dodaj pliki</b> albo przeciągnij tutaj</span><span style="font-size:11px">Umowy, aneksy, briefy, audyty</span></div></div>
+    </section>
+    <section class="card"><div class="card-h"><h2>${ic("link")}Linki Google</h2><span class="aside">Arkusze · Dokumenty · Prezentacje</span></div>
+      <div class="card-b" style="padding:10px 0 0"><div class="docs">${links.map(row).join("") || `<div class="empty">Brak linków</div>`}</div></div>
+      <form class="addlink" id="addlink">
+        <input class="f" id="lt" placeholder="Nazwa, np. Plan treści" required>
+        <input class="f" id="lu" type="url" placeholder="https://docs.google.com/…" required>
+        <button class="btn primary">${ic("plus")}Dodaj</button>
+      </form>
+    </section>
+  </div>`;
+}
+
+function tabNotes(c) {
+  const list = [...(state.notes[c.id] || [])].sort((a, b) => (b.pinned - a.pinned) || (b.date > a.date ? 1 : -1));
+  const card = n => {
+    if (state.editing === n.id) return `<form class="card note editing" data-noteform="${n.id}">
+      <input class="f" name="title" value="${esc(n.title)}" placeholder="Tytuł notatki" required style="font-weight:600">
+      <textarea class="f" name="body" placeholder="Treść…">${esc(n.body)}</textarea>
+      <div class="acts"><button type="button" class="btn sm ghost" data-cancel>Anuluj</button><button class="btn sm primary">${ic("check")}Zapisz</button></div></form>`;
+    return `<article class="card note">
+      <div style="display:flex;gap:8px;align-items:flex-start"><h3 style="flex:1">${esc(n.title)}</h3>${n.pinned ? `<span class="pin" title="Przypięta">${ic("pin")}</span>` : ""}</div>
+      <div class="body">${esc(n.body)}</div>
+      <div class="meta"><span>${esc(n.author)}</span><span>·</span><span>${fmt(n.date)}</span>${n.edited ? `<span>· edytowano</span>` : ""}</div>
+      <div class="acts">
+        ${state.confirmDel === n.id
+          ? `<span class="confirm">Usunąć tę notatkę?</span><button class="btn sm ghost" data-cancel>Nie</button><button class="btn sm danger" data-delnote="${n.id}">Usuń</button>`
+          : `<button class="btn sm ghost" data-pin="${n.id}">${ic("pin")}${n.pinned ? "Odepnij" : "Przypnij"}</button><button class="btn sm ghost" data-edit="${n.id}">${ic("edit")}Edytuj</button><button class="btn sm ghost" data-askdel="${n.id}" aria-label="Usuń">${ic("trash")}</button>`}
+      </div></article>`;
+  };
+  return `<div class="toolbar"><span class="count">${list.length} notatek · każda osobno, z tytułem</span><span class="sp"></span><button class="btn primary" data-newnote>${ic("plus")}Nowa notatka</button></div>
+  <div class="notes">${list.map(card).join("") || `<div class="card empty">Brak notatek. Dodaj pierwszą, np. ustalenia ze spotkania.</div>`}</div>`;
+}
+
+function tabActivity(c) {
+  const SRC = { seo: ["SEO", "src-seo", "layers"], pm: ["PM", "src-pm", "user"], klient: ["Klient", "src-klient", "msg"], sys: ["System", "src-sys", "cog"] };
+  const all = ACTIVITY[c.id] || [{ src: "sys", who: "sys", text: "Utworzono projekt " + c.name, date: c.start + "T09:00" }];
+  const list = all.filter(a => state.actFilter === "all" || a.src === state.actFilter);
+  let lastM = "";
+  const items = list.map(a => {
+    const x = d(a.date); const m = ML[x.getMonth()].replace(/a$/, "").replace(/ca$/, "c");
+    const month = ["styczeń", "luty", "marzec", "kwiecień", "maj", "czerwiec", "lipiec", "sierpień", "wrzesień", "październik", "listopad", "grudzień"][x.getMonth()] + " " + x.getFullYear();
+    const head = month !== lastM ? `<div class="tl-m">${month}</div>` : ""; lastM = month;
+    const s = SRC[a.src]; const who = a.who ? PEOPLE[a.who].name : a.who2;
+    return head + `<div class="tl-i"><div class="tl-dot ${s[1]}">${ic(s[2])}</div><div><p>${esc(a.text)}</p><span class="meta">${esc(who)} · ${a.src === "seo" ? "moduł SEO" : s[0]}</span></div><time class="num">${fmt(a.date)}, ${hm(a.date)}</time></div>`;
+  }).join("");
+  const fb = (k, l) => `<button class="fbtn${state.actFilter === k ? " on" : ""}" data-actf="${k}">${l}</button>`;
+  return `<div class="toolbar"><div class="filters">${fb("all", "Wszystko")}${fb("seo", "Moduł SEO")}${fb("pm", "PM")}${fb("klient", "Klient")}${fb("sys", "System")}</div><span class="sp"></span><span class="count">Wpisy z modułów pojawiają się automatycznie</span></div>
+  <section class="card"><div class="tl">${items || `<div class="empty">Brak wpisów dla tego filtra.</div>`}</div></section>`;
+}
+
+/* ---------- czat (atrapa wewnętrznego LLM) ---------- */
+function answer(c, q) {
+  const s = q.toLowerCase();
+  const K = c.contact, B = c.billing, D = c.dates;
+  if (/telefon|numer|kontakt|zadzwoni|mail/.test(s))
+    return [`Kontakt po stronie klienta: ${K.name}${K.role ? " (" + K.role + ")" : ""}\nTelefon: ${K.phone}\nE-mail: ${K.email}\nPreferuje: ${K.prefers}.` + (c.id === "simple" ? "\n\nSprawy techniczne: developer klienta Paweł, pawel@simple-przyklad.pl (z notatki „Dostępy”)." : ""), "Karta klienta, notatka „Dostępy”"];
+  if (/umow|wypowiedz|okres|aneks|zakres/.test(s))
+    return [`Umowa: ${c.agreement}, start ${D.contractStart ? fmtL(D.contractStart) : "—"}.\nMinimalny okres: do ${D.minTerm ? fmtL(D.minTerm) : "—"}.\nOkres wypowiedzenia: ${B.notice}.\nWaloryzacja: ${D.indexation ? fmtL(D.indexation) : "—"}.` + (c.id === "simple" ? "\nAneks nr 1 (12 sie 2026) rozszerzył content o 4 artykuły miesięcznie." : ""), "Umowa o świadczenie usług SEO.pdf, Aneks nr 1.pdf"];
+  if (/bud|faktur|płat|plat|kwot|ile płaci|nip/.test(s))
+    return [`Budżet: ${pln(c.budget)} netto miesięcznie.\n${B.terms}.\nFaktury na: ${B.name}, NIP ${B.nip}, wysyłka na ${B.invoiceEmail}.\nOstatnia faktura: FV/09/2026/114 z 1 wrz 2026.`, "Rozliczenia, historia faktur"];
+  if (/ewaluac|spotkan|przygot/.test(s))
+    return [`Ewaluacja: ${D.evaluation ? fmtL(D.evaluation) : "brak terminu"}, 10:00, biuro klienta.\nDo przygotowania (z Twojej notatki):\n• porównanie widoczności czerwiec vs wrzesień: TOP10 142 frazy (+18%)\n• ruch organiczny z GA4: 4 820/mies. (+12%)\n• lista wdrożonych rekomendacji: meta w 48 kategoriach, dane strukturalne na 212 produktach, 2 nowe artykuły\n• pytanie o Google Ads od listopada`, "Notatka „Ewaluacja — co przygotować”, moduł SEO"];
+  if (/dział|ostatn|podsum|co nowego|zrobi|aktywn/.test(s)) {
+    const a = (ACTIVITY[c.id] || []).slice(0, 5).map(x => `• ${fmt(x.date)}: ${x.text}`).join("\n");
+    return [`Ostatnie 5 zdarzeń:\n${a || "brak"}`, "Zakładka Aktywność"];
+  }
+  if (/seo|pozycj|wynik|ruch|fraz/.test(s) && c.seo)
+    return [`Wyniki SEO (wrzesień 2026):\n• frazy w TOP10: ${c.seo.top10} (${c.seo.top10d} od startu)\n• ruch organiczny: ${c.seo.traffic}/mies. (${c.seo.trafficd})\n• kondycja techniczna: ${c.seo.health}\nOtwarty problem: LCP 3,4 s na kartach produktów, czeka na developera klienta.`, "Moduł SEO, raport sierpniowy"];
+  return [`Mogę odpowiedzieć na pytania o ${c.name}: kontakty i telefony, zapisy umowy i aneksów, rozliczenia, historię współpracy, wyniki z modułów usług i przygotowanie do spotkań.\n\nTo prototyp, więc odpowiedzi są przykładowe. Docelowo odpowiada tu wewnętrzny model agencji podłączony do danych klienta.`, null];
+}
+function tabChat(c) {
+  const msgs = state.chats[c.id] || (state.chats[c.id] = [{ who: "ai", text: `Cześć Anna. Mam dostęp do umowy, aneksów, notatek, dokumentów i aktywności modułów dla ${c.name}. O co zapytasz?` }]);
+  const sugg = ["Podaj numer do klienta", "Jaki mamy okres wypowiedzenia?", "Co się działo w ostatnich tygodniach?", "Przygotuj mnie do ewaluacji", "Ile klient płaci i na jakie dane faktura?"];
+  return `<div class="chat">
+    <section class="card chat-box">
+      <div class="chat-h"><div class="bot">${ic("spark")}</div><div><b>Asystent inmarketing</b><span>Wewnętrzny LLM · kontekst: ${esc(c.name)}</span></div><span class="sample" style="margin-left:auto">ATRAPA</span></div>
+      <div class="msgs" id="msgs">${msgs.map(m => `<div class="msg ${m.who}">${esc(m.text)}${m.src ? `<span class="src">Źródło: ${esc(m.src)}</span>` : ""}</div>`).join("")}${state.typing === c.id ? `<div class="msg ai"><span class="typing"><i></i><i></i><i></i></span></div>` : ""}</div>
+      <div class="sugg">${sugg.map(s => `<button data-ask="${esc(s)}">${esc(s)}</button>`).join("")}</div>
+      <form class="chat-in" id="chatf"><input class="f" id="chatq" placeholder="Zapytaj o klienta, umowę, kontakty…" autocomplete="off"><button class="btn primary" aria-label="Wyślij">${ic("send")}</button></form>
+    </section>
+    <aside class="card ctx">
+      <span class="eyebrow">Z czego korzysta asystent</span>
+      <ul>
+        <li>${ic("check")}Umowa i aneksy (PDF)</li><li>${ic("check")}Dane rozliczeniowe i faktury</li><li>${ic("check")}Kontakty po stronie klienta</li>
+        <li>${ic("check")}Notatki PM i zespołu</li><li>${ic("check")}Aktywność z modułów usług</li><li>${ic("check")}Linki Google (arkusze, dokumenty)</li>
+      </ul>
+      <p class="muted" style="margin:4px 0 0">Asystent odpowiada tylko na podstawie danych tego klienta i podaje źródło każdej odpowiedzi.</p>
+    </aside>
+  </div>`;
+}
+function ask(c, q) {
+  q = q.trim(); if (!q) return;
+  state.chats[c.id].push({ who: "me", text: q });
+  state.typing = c.id; render();
+  setTimeout(() => { const [t, src] = answer(full(c), q); state.chats[c.id].push({ who: "ai", text: t, src }); state.typing = null; render(); }, 700);
+}
+
+/* ================= WIDOK USŁUGI (placeholder) ================= */
+function viewService(r) {
+  const c = CL[r.id]; const m = MOD[r.tab];
+  if (!c || !m) return `<div class="card empty">Nie znaleziono usługi.</div>`;
+  return `<nav class="crumbs"><a href="#projekty">Projekty</a><span>/</span><a href="#klient.${c.id}.uslugi">${esc(c.name)}</a><span>/</span><b>${m.name}</b></nav>
+  <section class="card soon">
+    <span class="modst">moduł ${m.id}-service działa</span>
+    <span class="big">${m.name}</span>
+    <p>Widok usługi ${m.name} dla klienta ${esc(c.name)} budujemy w kolejnym etapie. Moduł będzie osobnym kontenerem z własną bazą i API, a CRM pobierze z niego:</p>
+    <ul><li>zadania i harmonogram specjalisty</li><li>wyniki (widoczność, ruch, konwersje)</li><li>raporty miesięczne do wysyłki klientowi</li><li>zdarzenia do zakładki Aktywność</li></ul>
+    <a class="btn" href="#klient.${c.id}.uslugi">${ic("left")}Wróć do usług klienta</a>
+  </section>`;
+}
+
+/* ================= RENDER ================= */
+function render() {
+  const r = parse();
+  renderSide(r);
+  const page = $("#page");
+  let title = "Pulpit";
+  if (r.view === "projekty") { title = "Projekty"; page.innerHTML = viewProjects(); }
+  else if (r.view === "klient") { title = CL[r.id] ? CL[r.id].name : "Klient"; page.innerHTML = viewClient(r); }
+  else if (r.view === "usluga") { title = "Usługa"; page.innerHTML = viewService(r); }
+  else { page.innerHTML = viewDashboard(); }
+  $("#title").textContent = title;
+  $("#app").classList.remove("open");
+  const msgs = $("#msgs"); if (msgs) msgs.scrollTop = msgs.scrollHeight;
+}
+
+/* ================= ZDARZENIA ================= */
+function saveNotes() { store.set("notes", state.notes); }
+function saveDocs() { store.set("docs", state.docs); }
+function addFiles(files) {
+  const r = parse(); const list = state.docs[r.id] || (state.docs[r.id] = []);
+  [...files].forEach(f => {
+    const ext = (f.name.split(".").pop() || "").toLowerCase();
+    const kind = ext === "pdf" ? "pdf" : /docx?/.test(ext) ? "docx" : /xlsx?|csv/.test(ext) ? "sheet" : /pptx?/.test(ext) ? "slides" : "file";
+    const size = f.size > 1e6 ? (f.size / 1e6).toFixed(1).replace(".", ",") + " MB" : Math.max(1, Math.round(f.size / 1e3)) + " KB";
+    list.unshift({ kind, title: f.name, meta: `${ext.toUpperCase() || "PLIK"} · ${size} · dodano ${fmt("2026-09-30")} przez Anna Lis` });
+  });
+  saveDocs(); render(); toast(`Dodano ${files.length} ${files.length === 1 ? "plik" : "pliki"}`);
+}
+
+document.addEventListener("click", e => {
+  const t = e.target.closest("[data-go],[data-soon],[data-copy],[data-edit],[data-cancel],[data-askdel],[data-delnote],[data-pin],[data-newnote],[data-actf],[data-deldoc],[data-ask],#drop,#menu,#scrim");
+  if (!t) return;
+  const r = parse();
+  if (t.id === "menu") return $("#app").classList.toggle("open");
+  if (t.id === "scrim") return $("#app").classList.remove("open");
+  if (t.id === "drop") return $("#file").click();
+  if (t.dataset.go) { e.preventDefault(); return go(t.dataset.go); }
+  if (t.dataset.soon) return toast(`${t.dataset.soon} — w kolejnym etapie`);
+  if (t.dataset.copy) return copy(t.dataset.copy);
+  if (t.dataset.actf) { state.actFilter = t.dataset.actf; return render(); }
+  if (t.dataset.ask) { const c = CL[r.id]; return ask(c, t.dataset.ask); }
+  if (t.hasAttribute("data-deldoc")) {
+    const list = state.docs[r.id]; const x = list.splice(+t.dataset.deldoc, 1)[0];
+    saveDocs(); render(); return toast(`Usunięto: ${x.title}`);
+  }
+  const notes = state.notes[r.id] || (state.notes[r.id] = []);
+  if (t.hasAttribute("data-newnote")) {
+    const n = { id: "n" + Date.now(), title: "", body: "", author: "Anna Lis", date: "2026-09-30", pinned: false, fresh: true };
+    notes.unshift(n); state.editing = n.id; state.confirmDel = null; render();
+    const inp = document.querySelector(`[data-noteform="${n.id}"] input`); if (inp) inp.focus();
+    return;
+  }
+  if (t.dataset.edit) { state.editing = t.dataset.edit; state.confirmDel = null; render(); const inp = document.querySelector(`[data-noteform="${t.dataset.edit}"] textarea`); if (inp) inp.focus(); return; }
+  if (t.hasAttribute("data-cancel")) {
+    const fresh = notes.find(n => n.id === state.editing && n.fresh);
+    if (fresh) notes.splice(notes.indexOf(fresh), 1);
+    state.editing = null; state.confirmDel = null; return render();
+  }
+  if (t.dataset.askdel) { state.confirmDel = t.dataset.askdel; return render(); }
+  if (t.dataset.delnote) { notes.splice(notes.findIndex(n => n.id === t.dataset.delnote), 1); state.confirmDel = null; saveNotes(); render(); return toast("Notatka usunięta"); }
+  if (t.dataset.pin) { const n = notes.find(n => n.id === t.dataset.pin); n.pinned = !n.pinned; saveNotes(); return render(); }
+});
+
+document.addEventListener("submit", e => {
+  e.preventDefault();
+  const f = e.target; const r = parse();
+  if (f.dataset.noteform) {
+    const n = (state.notes[r.id] || []).find(n => n.id === f.dataset.noteform);
+    n.title = f.title.value.trim() || "Bez tytułu"; n.body = f.body.value.trim();
+    if (!n.fresh) n.edited = true; delete n.fresh;
+    state.editing = null; saveNotes(); render(); return toast("Notatka zapisana");
+  }
+  if (f.id === "addlink") {
+    const url = $("#lu").value.trim(); const [kind, label] = kindFromUrl(url);
+    (state.docs[r.id] || (state.docs[r.id] = [])).push({ kind, title: $("#lt").value.trim(), url, meta: `${label} · dodano 30 wrz 2026` });
+    saveDocs(); render(); return toast("Link dodany");
+  }
+  if (f.id === "chatf") { const q = $("#chatq").value; return ask(CL[r.id], q); }
+});
+
+document.addEventListener("input", e => {
+  const id = e.target.id;
+  if (id === "pq") { state.filters.q = e.target.value; const pos = e.target.selectionStart; render(); const i = $("#pq"); i.focus(); i.setSelectionRange(pos, pos); }
+  if (id === "gsearch") {
+    state.filters.q = e.target.value;
+    if (parse().view !== "projekty") { go("projekty"); }
+    else render();
+    setTimeout(() => { const g = $("#gsearch"); g.focus(); }, 0);
+  }
+});
+document.addEventListener("change", e => {
+  const m = { pstatus: "status", ptier: "tier", psvc: "svc" }[e.target.id];
+  if (m) { state.filters[m] = e.target.value; render(); }
+  if (e.target.id === "file" && e.target.files.length) { addFiles(e.target.files); e.target.value = ""; }
+});
+document.addEventListener("keydown", e => {
+  if (e.target.id === "drop" && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); $("#file").click(); }
+  if (e.key === "Enter" && e.target.closest("tr[data-go]")) go(e.target.closest("tr[data-go]").dataset.go);
+});
+["dragover", "dragleave", "drop"].forEach(ev => document.addEventListener(ev, e => {
+  const z = e.target.closest && e.target.closest("#drop"); if (!z) return;
+  e.preventDefault();
+  z.classList.toggle("over", ev === "dragover");
+  if (ev === "drop" && e.dataTransfer.files.length) addFiles(e.dataTransfer.files);
+}));
+
+render();
+})();
+</script>

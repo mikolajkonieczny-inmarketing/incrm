@@ -1,0 +1,116 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Kolorystyka jak na inmarketing.pl: jasne, chłodne tło, koral na akcjach, niebieski z logo, Poppins */
+:root {
+  --radius: 0.875rem;
+  --background: #ffffff;
+  --foreground: #00141a;
+  --shell: #f5f9fa;
+  --card: #ffffff;
+  --card-foreground: #00141a;
+  --popover: #ffffff;
+  --popover-foreground: #00141a;
+  --primary: #ff6f61;
+  --primary-foreground: #ffffff;
+  --primary-ink: #e14a3a;
+  --primary-soft: #fff0ee;
+  --brand-blue: #27398a;
+  --brand-blue-soft: #eaeefa;
+  --brand-link: #002a93;
+  --brand-cyan: #00c9ff;
+  --secondary: #eef4f5;
+  --secondary-foreground: #00141a;
+  --muted: #eef4f5;
+  --muted-foreground: #5f6f74;
+  --accent: #eef4f5;
+  --accent-foreground: #00141a;
+  --destructive: #e5484d;
+  --border: #dde6e8;
+  --input: #d4dddf;
+  --ring: #ff6f61;
+  --success: #0f9960;
+  --success-soft: #e5f6ee;
+  --warning: #c27400;
+  --warning-soft: #fff4de;
+  --danger: #e5484d;
+  --danger-soft: #fdeced;
+  --chart-1: #ff6f61;
+  --chart-2: #27398a;
+  --chart-3: #00c9ff;
+  --sidebar: #ffffff;
+  --sidebar-foreground: #00141a;
+  --sidebar-accent: #eef4f5;
+  --sidebar-border: #dde6e8;
+  color-scheme: light;
+}
+
+@theme inline {
+  --font-sans: "Poppins", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-display: "Poppins", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, "SF Mono", monospace;
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-shell: var(--shell);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary-ink: var(--primary-ink);
+  --color-primary-soft: var(--primary-soft);
+  --color-brand-blue: var(--brand-blue);
+  --color-brand-blue-soft: var(--brand-blue-soft);
+  --color-brand-link: var(--brand-link);
+  --color-brand-cyan: var(--brand-cyan);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-border: var(--sidebar-border);
+}
+
+@layer base {
+  * { @apply border-border outline-ring/40; }
+  html, body, #root { height: 100%; }
+  body {
+    @apply bg-shell text-foreground font-sans antialiased;
+    font-size: 14px;
+  }
+  h1, h2, h3 { text-wrap: balance; }
+  /* Siatki bez grid-cols-* mają jedną kolumnę, która może się kurczyć (inaczej długi tekst rozpycha stronę na telefonie).
+     Warstwa base: każda klasa grid-cols-* z utilities ma pierwszeństwo. */
+  .grid { grid-template-columns: minmax(0, 1fr); }
+  button { cursor: pointer; }
+  .tnum { font-variant-numeric: tabular-nums; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
